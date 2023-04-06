@@ -8,9 +8,12 @@
 </head>
 <body>
 <?php
+    try {
+
     $animeName = $_POST['animeName'];
     $episodes = $_POST['episodes'];
     $genreId = $_POST['genreId'];
+    $sNumber = $_POST['sNumber'];
     $ok = true;
 
 
@@ -19,10 +22,21 @@
         $ok = false;
     }
 
+
     if (empty($episodes)) {
         echo '<p>episodes is required.</p>';
         $ok = false;
     }
+
+    if (empty($sNumber)) {
+    echo '<p>Serial Number is required.</p>';
+    $ok = false;
+    }
+    else if (!is_numeric($sNumber)) {
+        echo '<p>serial number must be numeric.</p>';
+        $ok = false;
+    }
+
 
     if (empty($genreId)) {
         echo '<p>genre is required.</p>';
@@ -36,17 +50,18 @@
   
     if ($ok) {
 
-        $db = new PDO('mysql:host=172.31.22.43;dbname=Shridhara1175516', 'Shridhara1175516', '6acaa6dmXB');
+        require("includes/db.php");
 
         
-        $sql = "INSERT INTO animes (animeName, episodes, genreId) 
-            VALUES (:animeName, :episodes, :genreId)";
+        $sql = "INSERT INTO animes (animeName, episodes, genreId, sNumber) 
+            VALUES (:animeName, :episodes, :genreId, :sNumber)";
 
  
         $cmd = $db->prepare($sql);
         $cmd->bindParam(':animeName', $animeName, PDO::PARAM_STR, 255);
         $cmd->bindParam(':episodes', $episodes, PDO::PARAM_INT);
         $cmd->bindParam(':genreId', $genreId, PDO::PARAM_INT);
+        $cmd->bindParam(':sNumber', $sNumber, PDO::PARAM_INT);
 
 
         $cmd->execute();
@@ -54,12 +69,11 @@
 
         $db = null;
 
-        echo "You've saved your Anime succesfully. Congrats!";
+        echo "You've saved your Anime successfully. Congrats!";
+    }
+    header('location:saved-anime.php');
+    }
+    catch (Exception $e) {
+        header('location:error.php');
     }
     ?>
-<nav>
-  <a href="anime-description.php">add more anime</a> 
-  <a href="saved-anime.php">view all anime</a> 
-</nav>
-</body>
-</html>

@@ -1,19 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saved Anime</title>
-</head>
-<body>
-<nav>
-  <a href="anime-description.php">Add more anime</a>
-</nav>
+<?php
+    try {
+    $title = 'All anime';
+    require("includes/header.php");
+    }
+    catch (Exception $e) {
+        header('location:error.php');
+    }
+?>
+
     <h2>All Anime</h2>
+    <a href="anime-description.php">Add more anime</a>
     <?php
-        
-        $db = new PDO('mysql:host=172.31.22.43;dbname=Shridhara1175516', 'Shridhara1175516', '6acaa6dmXB');
+        try {
+
+        require("includes/db.php");
 
     
         $sql = "SELECT * FROM animes INNER JOIN genres ON animes.genreId = genres.genreId";
@@ -25,22 +25,31 @@
         $animes = $cmd->fetchAll();
 
 
-        echo '<table><thead><th>Name</th><th>Episodes</th><th>Genre</th>
+        echo '<table><thead><th>Serial number</th><th>Name</th><th>Episodes</th><th>Genre</th><th>Manage anime</th>
             </thead>';
 
         
         foreach ($animes as $anime) {
         
             echo '<tr>
+                <td>' . $anime['sNumber'] . '</td>
                 <td>' . $anime['animeName'] . '</td>
                 <td>' . $anime['episodes'] . '</td>
                 <td>' . $anime['genreName'] . '</td>
+                <td>
+                   <a href="delete-anime.php?sNumber=' . $anime['sNumber'] . '" title="delete" onclick="return confirmDelete();">Delete</a>
+                   <a href="edit-anime.php?sNumber=' . $anime['sNumber'] . '" title="Edit" >Edit</a>
+                </td>
                 </tr>';
         }
 
         echo '</table>';
 
         $db = null;
+        }
+        catch (Exception $e) {
+            header('location:error.php');
+        }
         ?>
 </body>
 </html>
